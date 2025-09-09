@@ -4,19 +4,20 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ศูนย์รวมลิงก์งาน (ตรอ. มีบุญยนตการ)</title>
-  <meta name="description" content="โฮสต์หน้าเดียวสำหรับเปิด Summary / Form / Cancel / Renewal ผ่านเมนู" />
+  <meta name="description" content="โฮสต์หน้าเดียวสำหรับเปิด Summary / Form / Cancel / Renewal ผ่านเมนู (เวอร์ชันไม่ใช้ iframe)" />
   <style>
     :root {
-      --blue-900: #1e3a8a; /* header text */
-      --blue-700: #1d4ed8; /* primary */
+      --blue-900: #1e3a8a;
+      --blue-700: #1d4ed8;
       --blue-600: #2563eb;
       --blue-500: #3b82f6;
-      --amber-400: #f59e0b; /* accent */
-      --bg: #0b1020; /* base bg */
-      --card: #0f172a; /* slate-900 */
-      --muted: #94a3b8; /* slate-400 */
-      --text: #e5e7eb; /* slate-200 */
+      --amber-400: #f59e0b;
+      --bg: #0b1020;
+      --card: #0f172a;
+      --muted: #94a3b8;
+      --text: #e5e7eb;
       --ring: rgba(59, 130, 246, 0.35);
+      --ok: #22c55e;
     }
     * { box-sizing: border-box; }
     html, body { height: 100%; }
@@ -27,60 +28,45 @@
                   var(--bg);
       color: var(--text);
     }
-    .wrap { display: grid; grid-template-rows: auto auto 1fr; min-height: 100dvh; }
+    .wrap { display: grid; grid-template-rows: auto auto 1fr auto; min-height: 100dvh; }
     header {
       position: sticky; top: 0; z-index: 50;
       background: linear-gradient(90deg, var(--blue-600), var(--blue-500));
-      color: white;
-      border-bottom: 1px solid rgba(255,255,255,.15);
+      color: white; border-bottom: 1px solid rgba(255,255,255,.15);
     }
-    .head {
-      display: flex; align-items: center; gap: .75rem;
-      padding: 12px 16px;
-    }
+    .head { display: flex; align-items: center; gap: .75rem; padding: 12px 16px; }
     .logo { width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, var(--amber-400), #ffd166); display: grid; place-items: center; color: #111827; font-weight: 900; }
     .title { font-weight: 700; letter-spacing: .2px; }
     .subtitle { font-size: .875rem; opacity: .9; }
 
-    nav {
-      display: flex; gap: 8px; padding: 8px; flex-wrap: wrap; background: rgba(0,0,0,.15);
-      border-top: 1px solid rgba(255,255,255,.08);
-    }
-    .tab {
-      appearance: none; border: 0; background: rgba(255,255,255,.08); color: #fff;
-      padding: 10px 14px; border-radius: 12px; font-weight: 600; cursor: pointer;
-      display: inline-flex; align-items: center; gap: 8px; transition: .2s ease;
-      outline-offset: 3px;
-    }
-    .tab:hover { background: rgba(255,255,255,.18); }
-    .tab[aria-current="page"] { background: #fff; color: #0f172a; box-shadow: 0 0 0 3px var(--ring); }
+    nav { display: flex; gap: 8px; padding: 8px; flex-wrap: wrap; background: rgba(0,0,0,.15); border-top: 1px solid rgba(255,255,255,.08); align-items: center; }
+    .tab { appearance: none; border: 0; background: rgba(255,255,255,.1); color: #fff; padding: 10px 14px; border-radius: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: .2s ease; outline-offset: 3px; }
+    .tab:hover { background: rgba(255,255,255,.2); }
     .tab svg { width: 18px; height: 18px; }
-
-    .actions { margin-left: auto; display: flex; gap: 8px; }
-    .action { appearance: none; border: 1px solid rgba(255,255,255,.3); background: transparent; color: #fff; padding: 8px 12px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: .2s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+    .actions { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+    .action { appearance: none; border: 1px solid rgba(255,255,255,.35); background: transparent; color: #fff; padding: 8px 12px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: .2s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
     .action:hover { background: rgba(255,255,255,.12); }
+    .switch { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; }
+    .switch input { appearance: none; width: 42px; height: 24px; border-radius: 999px; background: rgba(255,255,255,.25); position: relative; outline: none; cursor: pointer; transition: .2s; }
+    .switch input::after { content: ""; position: absolute; width: 18px; height: 18px; border-radius: 999px; background: #fff; left: 3px; top: 3px; transition: .2s; }
+    .switch input:checked { background: rgba(34,197,94,.7); }
+    .switch input:checked::after { transform: translateX(18px); }
 
-    .frame-wrap { position: relative; height: calc(100dvh - 140px); /* updated on load */ }
-    iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: #0b1220; border-top: 1px solid rgba(255,255,255,.08); }
+    .hero { display: grid; place-items: center; padding: 28px 16px; }
+    .card { width: min(1024px, 96%); background: var(--card); border: 1px solid rgba(148,163,184,.15); border-radius: 16px; padding: 20px; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+    .link { display: flex; align-items: center; gap: 12px; padding: 16px; border: 1px solid rgba(148,163,184,.2); border-radius: 14px; background: rgba(255,255,255,.02); color: var(--text); text-decoration: none; font-weight: 800; }
+    .link:hover { background: rgba(59,130,246,.08); border-color: rgba(59,130,246,.35); }
+    .link small { display: block; font-weight: 600; color: var(--muted); }
+    .go { margin-left: auto; font-size: .9rem; opacity: .9; }
 
-    .loader {
-      position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; transition: opacity .25s ease; background: linear-gradient(180deg, rgba(15,23,42,.65), rgba(15,23,42,.35));
-    }
-    .loader.hidden { opacity: 0; visibility: hidden; }
-    .spinner { width: 46px; height: 46px; border: 4px solid rgba(255,255,255,.25); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 12px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .hint { font-size: .9rem; color: var(--muted); text-align: center; max-width: 90%; }
+    .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: 16px; background: rgba(15,23,42,.95); border: 1px solid rgba(148,163,184,.35); padding: 10px 14px; border-radius: 999px; display: flex; align-items: center; gap: 8px; z-index: 100; font-weight: 700; }
+    .toast.ok { border-color: rgba(34,197,94,.65); }
 
     footer { padding: 12px 16px; color: var(--muted); font-size: .85rem; display: flex; gap: 12px; align-items: center; justify-content: space-between; border-top: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.02); }
-    .pill { background: rgba(59,130,246,.15); color: #bfdbfe; padding: 6px 10px; border-radius: 999px; font-weight: 600; }
+    .pill { background: rgba(59,130,246,.15); color: #bfdbfe; padding: 6px 10px; border-radius: 999px; font-weight: 700; }
 
-    @media (max-width: 640px) {
-      .subtitle { display: none; }
-      .actions { width: 100%; }
-      nav { gap: 6px; }
-      .tab { padding: 9px 12px; }
-      .action { flex: 1; justify-content: center; }
-    }
+    @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } .subtitle { display:none; } }
   </style>
 </head>
 <body>
@@ -90,155 +76,132 @@
         <div class="logo">ตรอ</div>
         <div>
           <div class="title">ศูนย์รวมลิงก์งาน • Host Menu</div>
-          <div class="subtitle">เปิดลิงก์ Apps Script (Summary / Form / Cancel / Renewal) ในหน้าเดียว</div>
+          <div class="subtitle">เวอร์ชันไม่ใช้ iframe (แก้ปัญหา script.google.com ปฏิเสธการฝัง)</div>
         </div>
       </div>
-      <nav id="tabs">
-        <!-- Tabs will be rendered by JS -->
+      <nav>
+        <div class="switch" title="เปิดลิงก์ในแท็บใหม่">
+          <label>เปิดในแท็บใหม่</label>
+          <input id="newTabToggle" type="checkbox" />
+        </div>
         <div class="actions">
-          <a id="openNew" class="action" href="#" target="_blank" rel="noopener">
-            <!-- external icon -->
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>
-            เปิดในแท็บใหม่
-          </a>
-          <button id="reloadBtn" class="action" type="button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3.36-7"/><path d="M21 3v6h-6"/></svg>
-            รีเฟรช
+          <button id="copyLink" class="action" type="button" title="คัดลอกลิงก์แท็บปัจจุบัน">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            คัดลอกลิงก์
           </button>
         </div>
       </nav>
     </header>
 
-    <div class="frame-wrap" id="frameWrap">
-      <iframe id="contentFrame" title="งาน Apps Script"></iframe>
-      <div class="loader" id="loader">
-        <div style="display:grid;place-items:center;gap:10px;">
-          <div class="spinner"></div>
-          <div class="hint">กำลังโหลดข้อมูลจากเซิร์ฟเวอร์… ถ้าใช้เวลานาน ให้ลองกด “เปิดในแท็บใหม่” ด้านบน</div>
+    <section class="hero">
+      <div class="card">
+        <div style="margin-bottom:12px; color:var(--muted); font-weight:700;">เลือกเมนูที่ต้องการ ระบบจะพาไปยังหน้า Apps Script โดยตรง</div>
+        <div class="grid">
+          <a class="link" data-route="home" href="#home">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 18 0A9 9 0 0 0 3 12zm9-5v10m-5-5h10"/></svg>
+            <div>
+              <div>สรุปงาน (Summary)</div>
+              <small>ไปที่หน้าหลัก</small>
+            </div>
+            <div class="go">ไปต่อ →</div>
+          </a>
+
+          <a class="link" data-route="form" href="#form">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="14" height="14" rx="2"/><path d="M7 9h10M7 13h10M7 17h6M9 3v4M15 3v4"/></svg>
+            <div>
+              <div>ลงทะเบียน (Form)</div>
+              <small>ไปที่แบบฟอร์ม</small>
+            </div>
+            <div class="go">ไปต่อ →</div>
+          </a>
+
+          <a class="link" data-route="cancel" href="#cancel">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l16 16M20 4 4 20"/><rect x="7" y="7" width="10" height="10" rx="2"/></svg>
+            <div>
+              <div>ยกเลิก (Cancel)</div>
+              <small>ไปที่หน้าแจ้งยกเลิก</small>
+            </div>
+            <div class="go">ไปต่อ →</div>
+          </a>
+
+          <a class="link" data-route="renewal" href="#renewal">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12A9 9 0 1 1 12 3v3l4-4-4-4v3"/></svg>
+            <div>
+              <div>ต่ออายุ (Renewal)</div>
+              <small>ไปที่หน้าต่ออายุ</small>
+            </div>
+            <div class="go">ไปต่อ →</div>
+          </a>
         </div>
       </div>
-    </div>
+    </section>
 
     <footer>
-      <div>เคล็ดลับ: แชร์ลิงก์แท็บปัจจุบันได้ด้วยการคัดลอก URL ที่มี <span class="pill">#home / #form / #cancel / #renewal</span></div>
+      <div>แชร์ไปหน้าที่ต้องการได้ด้วยการต่อท้าย <span class="pill">#home / #form / #cancel / #renewal</span></div>
       <div>© 2025 Meeboon Yontakan</div>
     </footer>
   </div>
 
   <script>
-    // === ตั้งค่าพื้นฐาน (แก้เฉพาะ BASE_URL ถ้าเปลี่ยน deployment) ===
+    // === ตั้งค่า ===
     const BASE_URL = "https://script.google.com/macros/s/AKfycbwEOHXqYIm7Wt99c_AOf4_fSgdARq_0ZOhjdGHrxatzd_CbTtCtHrSA6dpzWbgvzRdN/exec";
-
     const ROUTES = {
-      home:   { label: "สรุปงาน (Summary)",  url: BASE_URL,                                  icon: "M3 12a9 9 0 1 0 18 0A9 9 0 0 0 3 12zm9-5v10m-5-5h10" },
-      form:   { label: "ลงทะเบียน (Form)",   url: BASE_URL + "?view=form",                   icon: "M5 5h14v14H5z M9 3v4 M15 3v4 M7 9h10 M7 13h10 M7 17h6" },
-      cancel: { label: "ยกเลิก (Cancel)",     url: BASE_URL + "?view=cancel",                 icon: "M4 4l16 16M20 4 4 20 M7 7h10v10H7z" },
-      renewal:{ label: "ต่ออายุ (Renewal)",   url: BASE_URL + "?view=renewal",                icon: "M3 12a9 9 0 1 0 9-9v3l-4-4 4-4v3a12 12 0 1 1-12 12" }
+      home:   BASE_URL,
+      form:   BASE_URL + "?view=form",
+      cancel: BASE_URL + "?view=cancel",
+      renewal:BASE_URL + "?view=renewal"
     };
 
-    const frame = document.getElementById('contentFrame');
-    const loader = document.getElementById('loader');
-    const openNew = document.getElementById('openNew');
-    const reloadBtn = document.getElementById('reloadBtn');
-    const tabsEl = document.getElementById('tabs');
-    const frameWrap = document.getElementById('frameWrap');
+    const newTabToggle = document.getElementById('newTabToggle');
+    const copyBtn = document.getElementById('copyLink');
 
-    // Render tabs
-    function buildTabs() {
-      const btns = document.createElement('div');
-      btns.style.display = 'flex';
-      btns.style.gap = '8px';
-      for (const [key, cfg] of Object.entries(ROUTES)) {
-        const btn = document.createElement('button');
-        btn.className = 'tab';
-        btn.type = 'button';
-        btn.dataset.route = key;
-        btn.innerHTML = `${iconPath(cfg.icon)}<span>${cfg.label}</span>`;
-        btn.addEventListener('click', () => setRoute(key));
-        btns.appendChild(btn);
+    function go(name) {
+      const url = ROUTES[name] || ROUTES.home;
+      const inNew = !!newTabToggle.checked;
+      if (inNew) {
+        window.open(url, '_blank', 'noopener');
+        showToast('เปิดในแท็บใหม่แล้ว', true);
+      } else {
+        // ไปแท็บเดียว (แทนที่หน้าเมนูนี้)
+        window.location.href = url;
       }
-      tabsEl.insertBefore(btns, tabsEl.firstChild);
     }
 
-    function iconPath(d) {
-      // tiny inline SVG icon generator
-      return `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"></path></svg>`
-    }
-
-    function setActiveTab(name) {
-      document.querySelectorAll('.tab').forEach(el => {
-        el.setAttribute('aria-current', el.dataset.route === name ? 'page' : 'false');
+    // คลิกลิงก์การ์ด
+    document.querySelectorAll('a.link').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        go(a.dataset.route);
       });
-    }
-
-    function setRoute(name) {
-      const cfg = ROUTES[name] || ROUTES.home;
-      // show loader
-      loader.classList.remove('hidden');
-      frame.src = cfg.url;
-      openNew.href = cfg.url;
-      setActiveTab(name);
-      // update hash for shareable link
-      if (location.hash !== `#${name}`) location.hash = `#${name}`;
-    }
-
-    // On iframe load, hide loader
-    frame.addEventListener('load', () => {
-      loader.classList.add('hidden');
     });
 
-    // Reload current frame
-    reloadBtn.addEventListener('click', () => {
-      if (!frame.src) return;
-      loader.classList.remove('hidden');
-      // bust cache lightly
-      const url = new URL(frame.src);
-      url.searchParams.set('_ts', Date.now());
-      frame.src = url.toString();
+    // รองรับเปิดจาก hash โดยตรง เช่น .../host/#form
+    function checkHashRedirect() {
+      const name = (location.hash || '').replace('#','').toLowerCase();
+      if (ROUTES[name]) {
+        // หน่วงสั้นๆ เผื่อผู้ใช้เห็นว่ากำลังพาไป
+        setTimeout(() => go(name), 250);
+      }
+    }
+
+    function showToast(text, ok=false) {
+      const el = document.createElement('div');
+      el.className = 'toast' + (ok ? ' ok' : '');
+      el.textContent = text;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1800);
+    }
+
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(location.href);
+        showToast('คัดลอกลิงก์แล้ว', true);
+      } catch (e) {
+        showToast('คัดลอกไม่สำเร็จ');
+      }
     });
 
-    // Calculate viewport height for iframe container
-    function resizeFrameHeight() {
-      const head = document.querySelector('header');
-      const foot = document.querySelector('footer');
-      const h = window.innerHeight - head.offsetHeight - foot.offsetHeight;
-      frameWrap.style.height = Math.max(260, h) + 'px';
-    }
-    window.addEventListener('resize', resizeFrameHeight);
-
-    // Default route resolver from hash or query ?view=
-    function resolveInitialRoute() {
-      const hash = (location.hash || '').replace('#', '').toLowerCase();
-      const qp = new URLSearchParams(location.search);
-      const view = (qp.get('view') || '').toLowerCase();
-      if (ROUTES[hash]) return hash;
-      if (view === 'form') return 'form';
-      if (view === 'cancel') return 'cancel';
-      if (view === 'renewal') return 'renewal';
-      return 'home';
-    }
-
-    // Fallback: if content fails to load within 12s, show gentle hint
-    let failTimer;
-    function startFailTimer() {
-      clearTimeout(failTimer);
-      failTimer = setTimeout(() => {
-        loader.querySelector('.hint').textContent = 'ใช้เวลานานผิดปกติ อาจเกิดจากอินเทอร์เน็ตช้า หรือปลายทางหน่วง ให้ลองกด “เปิดในแท็บใหม่” ด้านบน';
-      }, 12000);
-    }
-
-    // Initialize
-    buildTabs();
-    resizeFrameHeight();
-    const initial = resolveInitialRoute();
-    setRoute(initial);
-    startFailTimer();
-
-    // Support back/forward navigation
-    window.addEventListener('hashchange', () => {
-      const name = (location.hash || '').slice(1);
-      if (ROUTES[name]) setRoute(name);
-    });
+    checkHashRedirect();
   </script>
 </body>
 </html>
